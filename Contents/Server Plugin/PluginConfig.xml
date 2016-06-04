@@ -1,0 +1,237 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<SupportURL>
+		http://forums.indigodomo.com/viewforum.php?f=170
+	</SupportURL>
+    <Field id="distanceUnits" type="menu" defaultValue="Metres">
+        <Label>What units would you like to use?</Label>
+    	<List>
+	    	<Option value="Metres">Metres (all m)</Option>
+		    <Option value="Metric">Metric (km/m)</Option>
+		    <Option value="Imperial">Imperial (ml/ft)</Option>
+	    </List>
+    </Field>
+    <Field id="simpleSeparator30" type="separator"/>
+    <Field id="fingscanLink" type="checkbox" defaultValue="false">
+        <Label>Enable FINGscan linking?:</Label>
+        <Description>Do you want to iFindStuff to FINGscan (see forum)?</Description>
+    </Field>
+    <Field id="simpleSeparator300" type="separator"/>
+    <Field id="mapStorage" type="textfield" defaultValue="">
+        <Label>Where would you like to save maps or tracking information?:</Label>
+        <Description>Where should maps and tracking data be saved for future use in control pages:</Description>
+    </Field>
+    <Field id="checkboxUpdateMaps" type="checkbox" defaultValue="true">
+        <Label>Automatic Maps?:</Label>
+        <Description>Do you want automatic update of maps?</Description>
+    </Field>
+    <Field id="mapFrequency" type="textfield" defaultValue="600"
+            visibleBindingId="checkboxUpdateMaps"
+            visibleBindingValue="true">
+        <Label>How often should maps be updated?:</Label>
+        <Description>How often should iFindStuff update maps?:</Description>
+    </Field>
+    <Field id="decimalPlaces" type="textfield" defaultValue="2">
+        <Label>How many decimal places for distances?:</Label>
+        <Description>How many decimal places should distances be rounded to?:</Description>
+    </Field>
+    <Field id="mapAPIKey" type="textfield" defaultValue="No Key">
+        <Label>What is your Google API key?:</Label>
+        <Description>Read the forum to get an API key if you're hitting refresh limits:</Description>
+    </Field>
+    <Field id="realDistance" type="checkbox" defaultValue="false">
+        <Label>Do you want to calculate the real distance home from Google?:</Label>
+        <Description>Read the forum to authorise your API Key for distance calculations:</Description>
+    </Field>
+    <Field id="realDistanceMode" type="menu" defaultValue="driving" visibleBindingId="realDistance" visibleBindingValue="true">
+        <Label>Distances Walking or Driving (Default = Driving?</Label>
+    	<List>
+	    	<Option value="driving">Driving</Option>
+		    <Option value="walking">Walking</Option>
+	    </List>
+    </Field>
+    <Field id="checkboxTracking" type="checkbox" defaultValue="true">
+        <Label>Store Historical Tracking?:</Label>
+        <Description>Do you want to record location tracking for devices?</Description>
+    </Field>
+    <Field id="trackTime" type="textfield" defaultValue="2"
+            visibleBindingId="checkboxTracking"
+            visibleBindingValue="true">
+        <Label>How many days of tracking should be retained?:</Label>
+        <Description>How many days of tracking do you want to maintain?:</Description>
+    </Field>
+    <Field id="iPadMaps" type="checkbox" defaultValue="false">
+        <Label>Do you want maps saved for iPad pages?</Label>
+    </Field>
+    <Field id="iPadMapHorizon" type="textfield" defaultValue="640"
+            visibleBindingId="iPadMaps"
+            visibleBindingValue="true">
+        <Label>Horizonal Map Resolution for iPad (Max 640 pixels):</Label>
+        <Description>Enter the map resolution.  Maximum is 640 pixels for free Google Maps</Description>
+    </Field>
+    <Field id="iPadMapVertical" type="textfield" defaultValue="320"
+            visibleBindingId="iPadMaps"
+            visibleBindingValue="true">
+        <Label>Vertical Map Resolution for iPad(Max 640 pixels):</Label>
+        <Description>Enter the map resolution.  Maximum is 640 pixels for free Google Maps</Description>
+    </Field>
+    <Field id="iPadMapZoom" type="textfield" defaultValue="15"
+            visibleBindingId="iPadMaps"
+            visibleBindingValue="true">
+        <Label>Map Zoom (default is 15, max 18):</Label>
+        <Description>Enter the zoom level for the maps - normal is 15</Description>
+    </Field>
+    <Field id="iPhoneMaps" type="checkbox" defaultValue="true">
+        <Label>Do you want maps saved for iPhone pages?</Label>
+    </Field>
+    <Field id="iPhoneMapHorizon" type="textfield" defaultValue="320"
+            visibleBindingId="iPhoneMaps"
+            visibleBindingValue="true">
+        <Label>Horizonal Map Resolution for iPhone (Max 640 pixels):</Label>
+        <Description>Enter the map resolution.  Maximum is 640 pixels for free Google Maps</Description>
+    </Field>
+    <Field id="iPhoneMapVertical" type="textfield" defaultValue="150"
+            visibleBindingId="iPhoneMaps"
+            visibleBindingValue="true">
+        <Label>Vertical Map Resolution for iPhone (Max 640 pixels):</Label>
+        <Description>Enter the map resolution.  Maximum is 640 pixels for free Google Maps</Description>
+    </Field>
+    <Field id="iPhoneMapZoom" type="textfield" defaultValue="15"
+            visibleBindingId="iPhoneMaps"
+            visibleBindingValue="true">
+        <Label>Map Zoom (default is 15, max 18):</Label>
+        <Description>Enter the zoom level for the maps - normal is 15</Description>
+    </Field>
+    <Field id="checkboxTrack" type="checkbox" defaultValue="true">
+        <Label>Do you want to track GeoFences:</Label>
+        <Description>Track GeoFences?</Description>
+    </Field>
+    <Field id="customIcon1" type="textfield" defaultValue="None">
+        <Label>Custom Icon 1 for Control Pages:</Label>
+        <Description>Custom Icon 1 for Control Pages (Note: Must be http:// not https:</Description>
+    </Field>
+     <Field id="customIcon2" type="textfield" defaultValue="None">
+        <Label>Custom Icon 2 for Control Pages:</Label>
+        <Description>Custom Icon 2 for Control Pages (Note: Must be http:// not https:</Description>
+    </Field>
+    <Field id="customIcon3" type="textfield" defaultValue="None">
+        <Label>Custom Icon 3 for Control Pages:</Label>
+        <Description>Custom Icon 3 for Control Pages (Note: Must be http:// not https:</Description>
+    </Field>
+    <Field id="customIcon4" type="textfield" defaultValue="None">
+        <Label>Custom Icon 4 for Control Pages:</Label>
+        <Description>Custom Icon 4 for Control Pages (Note: Must be http:// not https:</Description>
+    </Field>
+    <Field id="customIcon5" type="textfield" defaultValue="None">
+        <Label>Custom Icon 5 for Control Pages:</Label>
+        <Description>Custom Icon 5 for Control Pages (Note: Must be http:// not https:</Description>
+    </Field>
+    <Field id="customIcon6" type="textfield" defaultValue="None">
+        <Label>Custom Icon 6 for Control Pages:</Label>
+        <Description>Custom Icon 6 for Control Pages (Note: Must be http:// not https:</Description>
+    </Field>
+     <Field id="customIcon7" type="textfield" defaultValue="None">
+        <Label>Custom Icon 7 for Control Pages:</Label>
+        <Description>Custom Icon 7 for Control Pages (Note: Must be http:// not https:</Description>
+    </Field>
+    <Field id="customIcon8" type="textfield" defaultValue="None">
+        <Label>Custom Icon 8 for Control Pages:</Label>
+        <Description>Custom Icon 8 for Control Pages (Note: Must be http:// not https:</Description>
+    </Field>
+    <Field id="customIcon9" type="textfield" defaultValue="None">
+        <Label>Custom Icon 9 for Control Pages:</Label>
+        <Description>Custom Icon 9 for Control Pages (Note: Must be http:// not https:</Description>
+    </Field>
+    <Field id="customIcon10" type="textfield" defaultValue="None">
+        <Label>Custom Icon 10 for Control Pages:</Label>
+        <Description>Custom Icon 10 for Control Pages (Note: Must be http:// not https:</Description>
+    </Field>
+    <Field id="customGeoFence" type="textfield" defaultValue="GeoFence.png">
+        <Label>Custom Dynamic Marker Filename:</Label>
+        <Description>Custom Dynamic Icon for GeoFences (not available for Control Page Static Maps</Description>
+    </Field>
+    <Field id="simpleSeparator3" type="separator"/>
+    <Field id="refreshTime"
+           type="textfield"
+           defaultValue="60">
+        <Label>How long between updates:</Label>
+        <Description>How long between location updates (default 60s)?</Description>
+    </Field>
+    <Field id="refreshTime50"
+           type="textfield"
+           defaultValue="600">
+        <Label>How long between updates if battery below 50%?:</Label>
+        <Description>How long between location updates at 50%?</Description>
+    </Field>
+    <Field id="refreshTime40"
+           type="textfield"
+           defaultValue="1000">
+        <Label>How long between updates if battery below 40%?:</Label>
+        <Description>How long between location updates at 40%?</Description>
+    </Field>
+        <Field id="refreshTime30"
+           type="textfield"
+           defaultValue="3600">
+        <Label>How long between updates if battery below 30%?:</Label>
+        <Description>How long between location updates at 30%?</Description>
+    </Field>
+        <Field id="stationaryDefault"
+           type="textfield"
+           defaultValue="50">
+        <Label>Default radius in m for stationary?:</Label>
+        <Description>How much can device move and be stationary?</Description>
+    </Field>
+    <Field id="simpleSeparator2" type="separator"/>
+	<Field id="checkboxSingleFolder" type="checkbox" defaultValue="false">
+        <Label>Single Folder?</Label>
+        <Description>Do you want to use a single folder or different folders for devices?</Description>
+    </Field>
+    <Field id="checkboxDebug1" type="checkbox" defaultValue="False">
+        <Label>Debug:</Label>
+        <Description>All critical error debugging information to console (not recommended)</Description>
+    </Field>
+    <Field id="checkboxDebug2" type="checkbox" defaultValue="False">
+        <Label>Debug:</Label>
+        <Description>Warning debugging information to console (not recommended)?</Description>
+    </Field>
+        <Field id="checkboxDebug3" type="checkbox" defaultValue="False">
+        <Label>Debug:</Label>
+        <Description>Progress debugging information to console (not recommended)?</Description>
+    </Field>
+    <Field id="checkboxDebug4" type="checkbox" defaultValue="False">
+        <Label>Debug:</Label>
+        <Description>Very detailed GeoFence Calculations to console (not recommended)?</Description>
+    </Field>
+    <Field id="checkboxDebug5" type="checkbox" defaultValue="False">
+        <Label>Debug:</Label>
+        <Description>Distance and conversions to console (not recommended)?</Description>
+    </Field>
+    <Field id="checkboxDebug6" type="checkbox" defaultValue="False">
+        <Label>Log Errors in iFindStuff Log?:</Label>
+        <Description>Save exception errors to log (not recommended)?</Description>
+    </Field>
+    <Field id="logTime" type="textfield" defaultValue="3600">
+        <Label>How many seconds between Log resets?:</Label>
+        <Description>Time (s) between log resets (note all previous entries are lost)</Description>
+    </Field>
+    <Field id="simpleSeparator4" type="separator"/>
+    <Field id = "updaterEmailsEnabled" type = "checkbox" defaultValue = "false" tooltip  =  "Enables (disables) email notifications.">
+		<Label>Updater emails? </Label>
+		<Description>Enable/Disable email version updates</Description>
+	</Field>
+	<Field id = "updaterEmail" type = "textfield" visibleBindingId = "updaterEmailsEnabled" visibleBindingValue = "true" tooltip = "Please enter the email address to receive notifications of updates to the plugin.">
+		<Label>Email address:</Label>
+	</Field>
+    <Field id="rangeMeasure" type="textfield" defaultValue="metres" hidden="true">
+        <Label>Range Measurement Unit</Label>
+        <Description>Range Measurement Unit</Description>
+    </Field>
+    <Field id="distanceMeasure" type="textfield" defaultValue="metres" hidden="true">
+        <Label>Distance Measurement Unit</Label>
+        <Description>Distance Measurement Unit</Description>
+    </Field>
+    <Field id="accountsConfigured" type="checkbox" defaultValue="false" hidden="true">
+        <Label>Upgrade flag:</Label>
+        <Description>Upgrade flag?</Description>
+    </Field>
+</PluginConfig>

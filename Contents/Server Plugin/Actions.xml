@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!-- By default the NEST thermostat type devices will inherit all
+	 ThermostatAction actions, which will be dispatched to
+	 the actionControlThermostat() method defined in plugin.py.
+	 
+	 The only additional command required is to set the away status
+	 and this is provided below.  Other commands may be added in the future
+-->
+<Actions>
+	<Action id="messageAction" deviceFilter="self.iAppleDeviceAuto">
+		<Name>Send a Message</Name>
+		<ConfigUI>
+			<Field id='messageContent' type="textfield" defaultValue="Hello">
+				<Label>What's the message?</Label>
+			</Field>
+			<Field id="messageSound" type="checkbox" defaultValue="false">
+				<Label>Play Sound?:</Label>
+			</Field>
+		</ConfigUI>
+		<CallbackMethod>sendMessage</CallbackMethod>
+	</Action>
+	<Action id="refreshAllDevices">
+		<Name>Refresh all devices</Name>
+		<CallbackMethod>refreshAllDevices</CallbackMethod>
+	</Action>
+	<Action id="refreshDevice" deviceFilter="self.iAppleDeviceAuto">
+		<Name>Refresh a device</Name>
+		<CallbackMethod>refreshDevice</CallbackMethod>
+	</Action>
+	<Action id="toggleiDevice" deviceFilter="self.iAppleDeviceAuto">
+		<Name>Toggle active or inactive for an iDevice</Name>
+		<CallbackMethod>toggleDeviceAct</CallbackMethod>
+	</Action>
+	<Action id="setiDeviceActive" deviceFilter="self.iAppleDeviceAuto">
+		<Name>Set iDevice Active</Name>
+		<CallbackMethod>setDeviceAct</CallbackMethod>
+	</Action>
+	<Action id="setiDeviceInactive" deviceFilter="self.iAppleDeviceAuto">
+		<Name>Set iDevice Inactive</Name>
+		<CallbackMethod>setDeviceInact</CallbackMethod>
+	</Action>
+	<Action id="toggleGeoDevice" deviceFilter="self.iGeoFence">
+		<Name>Toggle active or inactive for a GeoFence</Name>
+		<CallbackMethod>toggleGeoAct</CallbackMethod>
+	</Action>
+	<Action id="setGeoDeviceActive" deviceFilter="self.iGeoFence">
+		<Name>Set GeoFence Active</Name>
+		<CallbackMethod>setGeoAct</CallbackMethod>
+	</Action>
+	<Action id="setGeoDeviceInactive" deviceFilter="self.iGeoFence">
+		<Name>Set GeoFence Inactive</Name>
+		<CallbackMethod>setGeoInact</CallbackMethod>
+	</Action>
+	<Action id="refreshMaps">
+		<Name>Refresh all maps</Name>
+		<CallbackMethod>refreshMaps</CallbackMethod>
+	</Action>
+	<Action id="refreshOneMap" deviceFilter="self.iAppleDeviceAuto">
+		<Name>Refresh a map</Name>
+		<CallbackMethod>refreshOneMap</CallbackMethod>
+	</Action>
+		<Action id="refreshFrequency" deviceFilter="self.iAppleDeviceAuto">
+		<Name>Toggle update frequency between Variable and Calculate</Name>
+		<CallbackMethod>refreshFrequency</CallbackMethod>
+	</Action>
+	<Action id="refreshFrequencyOn" deviceFilter="self.iAppleDeviceAuto">
+		<Name>Change update frequency from Calculate to Variable</Name>
+		<CallbackMethod>refreshFrequencyOn</CallbackMethod>
+	</Action>
+	<Action id="refreshFrequencyOff" deviceFilter="self.iAppleDeviceAuto">
+		<Name>Change update frequency from Variable to Calculate</Name>
+		<CallbackMethod>refreshFrequencyOff</CallbackMethod>
+	</Action>
+</Actions>

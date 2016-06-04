@@ -1,0 +1,773 @@
+<?xml version="1.0"?>
+<!--
+    Purpose is to create a new device type that includes all of the information from the Apple Find my Phone API
+    to use as a location feature for plugins
+
+    Future possibilities include adding iCloud and other security functionality including locking phones and calling
+-->
+<!-- iAccount is a custom device
+	 that provides access to live Apple Accounts and devices
+-->
+<Devices>
+	<Device type="custom" id="iAppleAccount">
+		<Name>Apple Account Device</Name>
+		<ConfigUI>
+			<Field id="appleId"
+				   type="textfield"
+				   tooltip="Enter the Apple Account Id"
+				   default="enterAppleId">
+				<Label>Enter the device Apple Account Id:</Label>
+			</Field>
+			<Field id="applePwd"
+				   type="textfield"
+				   tooltip="Enter your Apple Account Password"
+				   default=""
+				   secure = "True">
+				<Label>Enter your Apple Account Password:</Label>
+			</Field>
+			<Field id="appleActive"
+				   type="checkbox"
+				   tooltip="Is this account active?"
+				   default="True">
+				<Label>Make this Account Active?:</Label>
+			</Field>
+		</ConfigUI>
+		<States>
+			<State id="accountActive" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Active Apple Account?</TriggerLabel>
+				<ControlPageLabel>Active Apple Account?</ControlPageLabel>
+			</State>
+		</States>
+		<UiDisplayStateId>accountActive</UiDisplayStateId>
+	</Device>
+	<!-- Geolocation is a composite/custom device
+		that provides geofencing and range functionality.  It also maintains a record of what devices
+		are nearby, in range and affect NEST functionality where used
+	-->
+	<Device type="custom" id="iGeoFence">
+		<Name>Geofence Location Device</Name>
+		<ConfigUI>
+			<Field id="geoName"
+				   type="textfield"
+				   tooltip="Name of the GeoFence"
+				   default="Home">
+				<Label>Enter a unique name for the Geolocation (one must be Home for NEST Control):</Label>
+			</Field>
+			<Field id="geoDescription"
+				   type="textfield"
+				   tooltip="Enter a description"
+				   default="">
+				<Label>Enter a description for your Geolocation:</Label>
+			</Field>
+			<Field id="simpleSeparator2" type="separator"/>
+			<Field id="getLocation" type="button" tooltip="Click this button to find Longitude and Latitude">
+				<Label>Click this button to find Longitude and Latitude</Label>
+				<Title>Find Location Details</Title>
+				<CallbackMethod>getLatLong</CallbackMethod>
+			</Field>
+			<Field type="textfield"
+				   id="geoLatitude"
+				   hidden='False'
+				   defaultValue="0.00000000">
+				<Label>Latitude of the Geolocation?</Label>
+			</Field>
+			<Field type="textfield"
+				   hidden='False'
+				   id="geoLongitude"
+				   defaultValue="0.000000000">
+				<Label>Longitude of the Geolocation?</Label>
+			</Field>
+			<Field type="textfield"
+				   id="geoRange"
+				   hidden='False'
+				   defaultValue="0">
+				<Label>Range of the Geolocation?</Label>
+			</Field>
+			<Field type="checkbox"
+				   id="geoHome"
+				   hidden='False'
+				   defaultValue="False">
+				<Label>Home Geolocation?</Label>
+			</Field>
+			<Field type="checkbox"
+				   id="geoActive"
+				   hidden='True'
+				   defaultValue="True">
+				<Label>Geolocation Active?</Label>
+			</Field>
+			<Field type="checkbox"
+				   id="geoNEST"
+				   hidden='False'
+				   defaultValue="False">
+				<Label>Is this a NEST Geo?</Label>
+			</Field>
+			<Field type="checkbox"
+				   id="geoPower"
+				   hidden='False'
+				   defaultValue="False">
+				<Label>Is this a Power Saving Geo?</Label>
+			</Field>
+			<Field type="textfield"
+				   id="geoPowerTime"
+				   hidden='False'
+				   visibleBindingId="geoPower"
+				   visibleBindingValue="True"
+				   tooltip="How often is a device refreshed in this GeoFence if its respecting power saving Geos?"
+				   defaultValue="900">
+				<Label>How long between updates (s)?</Label>
+			</Field>
+		</ConfigUI>
+		<States>
+			<State id="devicesNear" readonly="YES">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Devices near?</TriggerLabel>
+				<ControlPageLabel>Number of devices near</ControlPageLabel>
+			</State>
+			<State id="devicesInRange" readonly="YES">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Devices in range</TriggerLabel>
+				<ControlPageLabel>Devices in range</ControlPageLabel>
+			</State>
+			<State id="devicesInNestRange" readonly="YES">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>In NEST Location</TriggerLabel>
+				<ControlPageLabel>In NEST Location</ControlPageLabel>
+			</State>
+		</States>
+        <UiDisplayStateId>devicesInRange</UiDisplayStateId>
+		<!-- iAppleDeviceAuto is a device that represents Apple devices linked to an Apple Account.  These devices
+			are created automatically once an active account is created.  Configuration is limited to making a device
+			active, tracking and NEST manager
+		-->
+	</Device>
+	<Device type="custom" id="iAppleDeviceAuto">
+		<Name>iDevice</Name>
+		<ConfigUI>
+			<Field type="checkbox"
+				   id="accountLocked"
+				   hidden='true'
+				   defaultValue = "false">
+				<Label>Account Info Locked?</Label>
+			</Field>
+			<Field type="checkbox"
+				   id="deviceLocked"
+				   hidden='true'
+				   defaultValue = "false">
+				<Label>Device Info Locked?</Label>
+			</Field>
+			<Field type="checkbox"
+				   id="deviceVariableFrequency"
+				   hidden='true'
+				   defaultValue = "false">
+				<Label>Uses variable for timing frequency?</Label>
+			</Field>
+			<Field id="autoLabel1" type="label">
+	        	<Label>Device Selection</Label>
+    		</Field>
+			<Field id="autoLabel2"
+				   type="label"
+				   fontSize="small"
+				   fontColor="blue">
+	        	<Label>First, select the Apple Account and then click Confirm Account</Label>
+    		</Field>
+			<Field id="targetAccounts" type="menu">
+				<Label>Apple Account?</Label>
+				<List class="self" filter="" method = "myActiveAccounts" />
+			</Field>
+			<Field id="accountIdentified"
+				   type="button"
+				   tooltip="Click on this button to CONFIRM the account"
+				   visibleBindingId="accountLocked"
+				   visibleBindingValue="false">
+				<Label>CONFIRM the account:</Label>
+				<Title>Confirm Account</Title>
+				<CallbackMethod>selectedAccount</CallbackMethod>
+			</Field>
+			<Field id="autoLabel23"
+				   type="label"
+				   fontColor="red"
+				   alignText="right"
+				   visibleBindingId="accountLocked"
+				   visibleBindingValue="true">
+	        	<Label>Account Confirmed</Label>
+			</Field>
+			<Field id="autoLabel22"
+				   type="label"
+				   fontSize="small"
+				   fontColor="blue">
+	        	<Label>Then select the Apple Device and then tick the second checkbox</Label>
+			</Field>
+			<Field id="targetDevices" type="menu">
+				<Label>Devices on Account?</Label>
+				<List class="self" filter='' method = "myAccountDevices" dynamicReload="true" />
+			</Field>
+			<Field id="deviceIdentified"
+				   type="button"
+				   tooltip="Click on this button to CONFIRM the device"
+				   visibleBindingId="deviceLocked"
+				   visibleBindingValue="false">
+				<Label>CONFIRM the device:</Label>
+				<Title>Confirm Device</Title>
+				<CallbackMethod>selectedDevice</CallbackMethod>
+			</Field>
+			<Field id="autoLabel24"
+				   type="label"
+				   fontColor="red"
+				   alignText="right"
+				   visibleBindingId="deviceLocked"
+				   visibleBindingValue="true">
+	        	<Label>Device Confirmed</Label>
+			</Field>
+			<Field id="appleName"
+				   type="textfield"
+				   tooltip="Enter a unique name for this device"
+				   default="">
+				<Label>Unique Device Name?</Label>
+			</Field>
+			<Field type="checkbox"
+				   id="staticDevice"
+				   hidden='false'
+				   defaultValue="false">
+				<Label>Is this device expected to stay in the same place?</Label>
+			</Field>
+			<Field type="checkbox"
+				   id="nestMode"
+				   hidden='false'
+				   defaultValue="false">
+				<Label>Device triggers NEST Geos?</Label>
+			</Field>
+			<Field id="simpleSeparator32" type="separator"/>
+			<Field id="autoLabel32" type="label">
+				<Label>Mapping Icon Options</Label>
+    		</Field>
+			<Field id="autoLabel40" type="label"
+				   fontSize="small"
+				   fontColor="blue">
+	        	<Label>Customise how your device is displayed on maps by choosing custom icons</Label>
+    		</Field>
+			<Field id="customIcon" type="menu" defaultValue="None">
+				<Label>Static Maps Custom Icon for Control Page?</Label>
+				<List class="self" filter="" method = "selectIcon" />
+			</Field>
+			<Field id="customMap"
+				   type="textfield"
+				   tooltip="Enter a filename in your Maps directory for this marker"
+				   default="">
+				<Label>Dynamic Maps Icon filename (leave Blank for Default)</Label>
+			</Field>
+			<Field id="simpleSeparator10" type="separator"/>
+			<Field id="autoLabel3" type="label">
+				<Label>Power Management</Label>
+    		</Field>
+			<Field id="autoLabel4" type="label" 
+				   fontSize="small" 
+				   fontColor="blue">
+	        	<Label>Customise your device by adding standard refresh rates</Label>
+    		</Field>
+			<Field id="frequencyTimer"
+				   type="textfield"
+				   tooltip="Normal update frequency in seconds for this device"
+				   defaultValue="600">
+				<Label>Normal Update Frequency (s)?:</Label>
+			</Field>
+			<Field id="autoLabel5" type="label" fontSize="small" fontColor="blue">
+	        	<Label>Enter how often you'd like to refresh this device when your battery charge gets lower</Label>
+    		</Field>
+			<Field type="checkbox"
+				   id="batteryChargeOverride"
+				   hidden='false'
+				   defaultValue="true">
+				<Label>Revert to Normal Frequency when charging?</Label>
+			</Field>
+			<Field id="frequency50"
+				   type="textfield"
+				   tooltip="Update frequency when battery is less than 50%"
+				   defaultValue="1000">
+				<Label>50% Update Frequency (s)?</Label>
+			</Field>
+			<Field id="frequency40"
+				   type="textfield"
+				   tooltip="Update frequency when battery is less than 40%"
+				   defaultValue="1500">
+				<Label>40% Update Frequency (s)?</Label>
+			</Field>
+			<Field id="frequency30"
+				   type="textfield"
+				   tooltip="Update frequency when battery is less than 30%"
+				   defaultValue="3600">
+				<Label>30% Update Frequency (s)?</Label>
+			</Field>
+			<Field id="simpleSeparator11" type="separator"/>
+			<Field id="autoLabel6" type="label" fontSize="small" fontColor="blue">
+	        	<Label>Stationary mode detects if your device is in the same place and reduces the update frequency</Label>
+    		</Field>
+			<Field id="UDist"
+				   type="textfield"
+				   hidden="'false"
+				   defaultValue="20">
+				<Label>Distance device can be moved and be at same address (ft or m)?</Label>
+			</Field>
+			<Field type="checkbox"
+				   id="stationaryMode"
+				   hidden='false'
+				   defaultValue="true">
+				<Label>Stationary Mode?</Label>
+			</Field>
+			<Field id="speedStation"
+				   type="textfield"
+				   tooltip="Maximum speed for a device when it's stationary (in miles/hour or km/hour)"
+				   defaultValue="1"
+					visibleBindingId="stationaryMode"
+					visibleBindingValue="true">
+				<Label>Speed a device can move before it's considered moving (m)</Label>
+			</Field>
+			<Field id="distanceTime"
+				   type="textfield"
+				   tooltip="Time a device must be stationary before frequency changes"
+				   defaultValue="600"
+				   visibleBindingId="stationaryMode"
+				   visibleBindingValue="true">
+				<Label>Time a device must be below the maximum stationary speed</Label>
+			</Field>
+			<Field id="distanceFrequency"
+				   type="textfield"
+				   tooltip="Update frequency when device is stationary"
+				   defaultValue="600"
+				   visibleBindingId="stationaryMode"
+				   visibleBindingValue="true">
+				<Label>Time between updates when the device is stationary</Label>
+			</Field>
+			<Field id="simpleSeparator12" type="separator"/>
+			<Field id="autoLabel7" type="label" fontSize="small" fontColor="blue">
+	        	<Label>Home mode detects if your device is in the Home Geo and reduces the update frequency</Label>
+    		</Field>
+			<Field type="checkbox"
+				   id="homeMode"
+				   hidden='false'
+				   defaultValue='false'>
+				<Label>Home Mode?</Label>
+			</Field>
+			<Field type="textfield"
+				   id="homeTime"
+				   hidden='false'
+				   defaultValue='00:00 - 00:00'
+				   visibleBindingId="homeMode"
+				   visibleBindingValue="true">
+				<Label>Time range limit (enter 00:00-00:00 for no restriction)?</Label>
+			</Field>
+			<Field id="simpleSeparator13" type="separator"/>
+			<Field id="autoLabel8" type="label" fontSize="small" fontColor="blue">
+	        	<Label>Night mode switches off all updates between sunset and sunrise or a time range you specify</Label>
+    		</Field>
+			<Field type="checkbox"
+				   id="nightMode"
+				   hidden='false'
+				   defaultValue='false'>
+				<Label>Night Mode?</Label>
+			</Field>
+			<Field type="textfield"
+				   id="nightTime"
+				   hidden='false'
+				   defaultValue='21:00-06:00'
+				   visibleBindingId="nightMode"
+				   visibleBindingValue="true">
+				<Label>Night time range (enter 00:00-00:00 for sunset to sunrise)?</Label>
+			</Field>
+			<Field type="textfield"
+				   id="nightFrequency"
+				   hidden='false'
+				   defaultValue='900'
+				   visibleBindingId="nightMode"
+				   visibleBindingValue="true">
+				<Label>Night time update frequency?</Label>
+			</Field>
+			<Field id="simpleSeparator21" type="separator"/>
+			<Field id="autoLabel56" type="label" fontSize="small" fontColor="blue">
+	        	<Label>Schedule no updates in up to three time ranges to save battery</Label>
+    		</Field>
+			<Field type="checkbox"
+				   id="scheduleMode"
+				   hidden="false"
+				   defaultValue="true">
+				<Label>Do you want specify upto 3 scheduled saving periods?</Label>
+			</Field>
+			<Field type="textfield"
+				   id="scheduleTime1"
+				   hidden='false'
+				   defaultValue='00:00 - 00:00'
+				   visibleBindingId="scheduleMode"
+				   visibleBindingValue="true">
+				<Label>Time range limit (enter 00:00-00:00 for no restriction)?</Label>
+			</Field>
+			<Field type="textfield"
+				   id="scheduleTime2"
+				   hidden='false'
+				   defaultValue='00:00 - 00:00'
+				   visibleBindingId="scheduleMode"
+				   visibleBindingValue="true">
+				<Label>Time range limit (enter 00:00-00:00 for no restriction)?</Label>
+			</Field>
+			<Field type="textfield"
+				   id="scheduleTime3"
+				   hidden='false'
+				   defaultValue='00:00 - 00:00'
+				   visibleBindingId="scheduleMode"
+				   visibleBindingValue="true">
+				<Label>Time range limit (enter 00:00-00:00 for no restriction)?</Label>
+			</Field>
+			<Field type="textfield"
+				   id="scheduleFrequency"
+				   hidden='false'
+				   defaultValue='3600'
+				   visibleBindingId="scheduleMode"
+				   visibleBindingValue="true">
+				<Label>Enter frequency when device is in schedule saving mode?</Label>
+			</Field>
+			<Field id="simpleSeparator14" type="separator"/>
+			<Field id="autoLabel9" type="label" fontSize="small" fontColor="blue">
+	        	<Label>Respecting power saving geofences will automatically reduce update frequency when your in range of one</Label>
+    		</Field>
+			<Field type="checkbox"
+				   id="powerSaveMode"
+				   hidden="false"
+				   defaultValue="true">
+				<Label>Respect Power Saving Geos?</Label>
+			</Field>
+			<Field type="textfield"
+				   id="powerTime"
+				   hidden='false'
+				   defaultValue='00:00 - 00:00'
+				   visibleBindingId="powerSaveMode"
+				   visibleBindingValue="true">
+				<Label>Time range limit (enter 00:00-00:00 for no restriction)?</Label>
+			</Field>
+			<Field type="textfield"
+				   id="powerFrequency"
+				   hidden='false'
+				   defaultValue='3600'
+				   visibleBindingId="powerSaveMode"
+				   visibleBindingValue="true">
+				<Label>Enter frequency when device is in power saving mode?</Label>
+			</Field>
+			<Field id="simpleSeparator15" type="separator"/>
+			<Field id="autoLabel10" type="label" fontSize="small" fontColor="blue">
+	        	<Label>Holiday mode reduces updates to hourly when you're a certain distance from your Home Geo</Label>
+    		</Field>
+			<Field type="checkbox"
+				   id="holidayMode"
+				   hidden='false'
+				   defaultValue="false">
+				<Label>Holiday Mode?</Label>
+			</Field>
+			<Field id="distanceHoliday"
+				   type="textfield"
+				   visibleBindingId="holidayMode"
+				   visibleBindingValue="true"
+				   tooltip="Range a device must be from Home Geo to set Holiday Mode (m)"
+				   defaultValue="3000000">
+				<Label>Holiday Mode Distance (m)</Label>
+			</Field>
+			<Field type="textfield"
+				   id="holidayFrequency"
+				   hidden='false'
+				   defaultValue='3600'
+				   visibleBindingId="holidayMode"
+				   visibleBindingValue="true">
+				<Label>Enter frequency when device is in Holiday mode?</Label>
+			</Field>
+		</ConfigUI>
+		<States>
+			<!--
+			iPhones and iPads are created from the user's own account.  Use of the family functionlity allows
+			linking of devices into a single account.  Some of these states are returned from the API while
+			others are calculated on a regular basis for use in reporting or triggers
+			-->
+			<State id="deviceUniqueKey" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Device Key</TriggerLabel>
+				<ControlPageLabel>Device Unique Key</ControlPageLabel>
+			</State>
+			<State id="deviceLock" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Device Locked</TriggerLabel>
+				<ControlPageLabel>Device Locked</ControlPageLabel>
+			</State>
+			<State id="deviceDisplayName" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Device Type</TriggerLabel>
+				<ControlPageLabel>Device Type</ControlPageLabel>
+			</State>
+			<State id="deviceStatus" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Device Status</TriggerLabel>
+				<ControlPageLabel>Device Status</ControlPageLabel>
+			</State>
+			<State id="deviceBattery" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Device % Battery</TriggerLabel>
+				<ControlPageLabel>Battery Status</ControlPageLabel>
+			</State>
+			<State id="deviceName" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Device Name</TriggerLabel>
+				<ControlPageLabel>Device Name</ControlPageLabel>
+			</State>
+			<State id="deviceIsMac" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Devices is a Mac Computer</TriggerLabel>
+				<ControlPageLabel>Mac Computer?</ControlPageLabel>
+			</State>
+			<State id="accountName" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Account Name</TriggerLabel>
+				<ControlPageLabel>Account Name</ControlPageLabel>
+			</State>
+			<State id="deviceModel" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Device Model</TriggerLabel>
+				<ControlPageLabel>Model</ControlPageLabel>
+			</State>
+			<State id="deviceLocationEnabled" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Location Enabled</TriggerLabel>
+				<ControlPageLabel>Location Enabled</ControlPageLabel>
+			</State>
+			<State id="deviceIsLocating" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Device is Locating</TriggerLabel>
+				<ControlPageLabel>Device is Locating</ControlPageLabel>
+			</State>
+			<State id="deviceTimeChecked" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Device Time Last Checked</TriggerLabel>
+				<ControlPageLabel>Device Time Last Checked</ControlPageLabel>
+			</State>
+			<State id="deviceStationary" readonly="YES">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Device Time Stationary</TriggerLabel>
+				<TriggerLabelPrefix>Seconds device stationary is</TriggerLabelPrefix>
+				<ControlPageLabel>Stationary Time</ControlPageLabel>
+			</State>
+			<State id="devicePositionType" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Device Location Lock</TriggerLabel>
+				<ControlPageLabel>Device Location Lock</ControlPageLabel>
+			</State>
+			<State id="deviceAccuracy" readonly="YES">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Location Accuracy</TriggerLabel>
+				<TriggerLabelPrefix>Location accuracy is</TriggerLabelPrefix>
+				<ControlPageLabel>Location Accuracy</ControlPageLabel>
+			</State>
+				<State id="deviceLatitude" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Device Latitude</TriggerLabel>
+				<ControlPageLabel>Device Latitude</ControlPageLabel>
+			</State>
+			<State id="deviceLongitude" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Device Longitude</TriggerLabel>
+				<ControlPageLabel>Device Longitude</ControlPageLabel>
+			</State>
+			<State id="deviceIsOldPosition" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Old Position</TriggerLabel>
+				<TriggerLabelPrefix>Old Position setting is</TriggerLabelPrefix>
+				<ControlPageLabel>Old Position</ControlPageLabel>
+			</State>
+			<State id="deviceInaccurate" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Is Inaccurate</TriggerLabel>
+				<TriggerLabelPrefix>Inaccurate setting is</TriggerLabelPrefix>
+				<ControlPageLabel>Is Inaccurate</ControlPageLabel>
+			</State>
+			<State id="deviceBatteryLevel" readonly="YES">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Battery Level (no %)</TriggerLabel>
+				<TriggerLabelPrefix>Device % Battery Level is</TriggerLabelPrefix>
+				<ControlPageLabel>Battery Level (no %)</ControlPageLabel>
+			</State>
+			<State id="deviceNearestGeoName" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Name of Geolocation in range</TriggerLabel>
+				<TriggerLabelPrefix>Name of nearest GeoLocation is</TriggerLabelPrefix>
+				<ControlPageLabel>Geolocation?</ControlPageLabel>
+			</State>
+			<State id="deviceGeoDistance" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Distance from Geolocation centre</TriggerLabel>
+				<TriggerLabelPrefix>Device distance from nearest GeoFence is</TriggerLabelPrefix>
+				<ControlPageLabel>Geolocation centre</ControlPageLabel>
+			</State>
+			<State id="deviceInGeoRange" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>In GeoLocation Range?</TriggerLabel>
+				<TriggerLabelPrefix>Device in Nearest GeoFence Range is</TriggerLabelPrefix>
+				<ControlPageLabel>In Geolocation Range?</ControlPageLabel>
+			</State>
+			<State id="deviceInNestRange" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>In NEST Range?</TriggerLabel>
+				<TriggerLabelPrefix>Device in range of a NEST is</TriggerLabelPrefix>
+				<ControlPageLabel>In NEST Range?</ControlPageLabel>
+			</State>
+			<State id="deviceEntered" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Entered Range</TriggerLabel>
+				<TriggerLabelPrefix>Device just entered a range is</TriggerLabelPrefix>
+				<ControlPageLabel>Entered Range</ControlPageLabel>
+			</State>
+			<State id="deviceLeft" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Left Range</TriggerLabel>
+				<TriggerLabelPrefix>Device just left a range is</TriggerLabelPrefix>
+				<ControlPageLabel>Left Range</ControlPageLabel>
+			</State>
+			<State id="deviceLeftGeo" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Left Range Name</TriggerLabel>
+				<ControlPageLabel>Left Range Name</ControlPageLabel>
+			</State>
+			<State id="deviceEnteredGeo" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Entered Range Name</TriggerLabel>
+				<ControlPageLabel>Entered Range Name</ControlPageLabel>
+			</State>
+			<State id="deviceActive" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Device is Active?</TriggerLabel>
+				<TriggerLabelPrefix>Device Active is</TriggerLabelPrefix>
+				<ControlPageLabel>Active?</ControlPageLabel>
+			</State>
+			<State id="directionDegree" readonly="YES">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Bearing to Home</TriggerLabel>
+				<TriggerLabelPrefix>Device bearing is</TriggerLabelPrefix>
+				<ControlPageLabel>Bearing to Home?</ControlPageLabel>
+			</State>
+			<State id="directionCompass" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Compass Bearing to Home</TriggerLabel>
+				<ControlPageLabel>Compass Bearing to Home?</ControlPageLabel>
+			</State>
+			<State id="distanceHome" readonly="YES">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Distance from device to Home Geo</TriggerLabel>
+				<TriggerLabelPrefix>Distance to Home (Distance Unit) is</TriggerLabelPrefix>
+				<ControlPageLabel>Distance to Home?</ControlPageLabel>
+			</State>
+			<State id="geoHomeName" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Name of Home GeoFence</TriggerLabel>
+				<ControlPageLabel>Name of Home Geo?</ControlPageLabel>
+			</State>
+			<State id="deviceAddress" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Current Location Address</TriggerLabel>
+				<ControlPageLabel>Current Address</ControlPageLabel>
+			</State>
+			<State id="deviceAccount" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Master Account</TriggerLabel>
+				<ControlPageLabel>Device Account Id</ControlPageLabel>
+			</State>
+			<State id="timeNextUpdate" readonly="YES">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Time to Next Update (ms)</TriggerLabel>
+				<ControlPageLabel>Time to Next Update (ms)</ControlPageLabel>
+			</State>
+			<State id="timeUpdateRead" readonly="YES">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Time of next update</TriggerLabel>
+				<ControlPageLabel>Time of next update</ControlPageLabel>
+			</State>
+			<State id="secondsNextUpdate" readonly="YES">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Time between updates (s)</TriggerLabel>
+				<TriggerLabelPrefix>Time between updates is</TriggerLabelPrefix>
+				<ControlPageLabel>Time between updates (s)</ControlPageLabel>
+			</State>
+			<State id="batteryOnCharge" readonly="YES" default="Charged">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Battery Status</TriggerLabel>
+				<TriggerLabelPrefix>Battery is</TriggerLabelPrefix>
+				<ControlPageLabel>Battery Status</ControlPageLabel>
+			</State>
+			<State id="oldLat" readonly="YES" default="0">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Old Latitude</TriggerLabel>
+				<ControlPageLabel>Old Latutude</ControlPageLabel>
+			</State>
+			<State id="oldLong" readonly="YES" default="0">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Old Latitude</TriggerLabel>
+				<ControlPageLabel>Old Latutude</ControlPageLabel>
+			</State>
+			<State id="ULat" readonly="YES" default="0.0">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Last Update Latitude</TriggerLabel>
+				<ControlPageLabel>Last Update Latitude</ControlPageLabel>
+			</State>
+			<State id="ULong" readonly="YES" default="0.0">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Last Update Longitude</TriggerLabel>
+				<ControlPageLabel>Last Update Longitude</ControlPageLabel>
+			</State>
+			<State id="UMoved" readonly="YES" default="false">
+				<ValueType>Boolean</ValueType>
+				<TriggerLabel>Moved Since Last Update</TriggerLabel>
+				<TriggerLabelPrefix>Deviced moved since last update is</TriggerLabelPrefix>
+				<ControlPageLabel>Moved Since Last Update</ControlPageLabel>
+			</State>
+			<State id="lastStationaryCheck" readonly="YES" default="0">
+				<ValueType>Number</ValueType>
+				<TriggerLabel>Last time stationary was checked (s)</TriggerLabel>
+				<ControlPageLabel>Last time stationary checked (s)</ControlPageLabel>
+			</State>
+			<State id="geoDistanceDisplay" readonly="YES" default="0">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Distance for Display</TriggerLabel>
+				<ControlPageLabel>Distance to nearest Geo for Display</ControlPageLabel>
+			</State>
+			<State id="geoHomeDistanceDisplay" readonly="YES" default="0">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Distance Home for Display</TriggerLabel>
+				<ControlPageLabel>Distance Home for Display</ControlPageLabel>
+			</State>
+			<State id="realDistanceHome" readonly="YES" default="0">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Distance Home from Google Maps</TriggerLabel>
+				<ControlPageLabel>Distance Home from Google Maps</ControlPageLabel>
+			</State>
+			<State id="realTimeHome" readonly="YES" default="0">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Travel Time Home</TriggerLabel>
+				<ControlPageLabel>Travel Time Home from Google</ControlPageLabel>
+			</State>
+			<State id="rangeUnits" readonly="YES" default="metres">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Range Units</TriggerLabel>
+				<ControlPageLabel>Range Units</ControlPageLabel>
+			</State>
+			<State id="distanceUnits" readonly="YES" default="metres">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Distance Units</TriggerLabel>
+				<ControlPageLabel>Distance Units</ControlPageLabel>
+			</State>
+			<State id="calculateMethod" readonly="YES" default="Calculated">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Update frequency method</TriggerLabel>
+				<TriggerLabelPrefix>Updates are scheduled by</TriggerLabelPrefix>
+				<ControlPageLabel>Update Frequency method</ControlPageLabel>
+			</State>
+			<State id="loggedTrack" readonly="YES" default="false">
+				<ValueType>String</ValueType>
+				<TriggerLabel>Tracking Data Logged (not used on TGR)</TriggerLabel>
+				<TriggerLabelPrefix>Tracking Data Logged (not used on TGR)</TriggerLabelPrefix>
+				<ControlPageLabel>Tracking Data Logged (not used on CP)</ControlPageLabel>
+			</State>
+		</States>
+        <UiDisplayStateId>deviceNearestGeoName</UiDisplayStateId>
+	</Device>
+</Devices>

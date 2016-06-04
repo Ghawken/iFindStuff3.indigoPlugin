@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<!-- By default there are limited menu options
+    Below are the additional commands provided
+        displayNest() - Allows the user to see a list of all NEST devices
+        in the indigo log
+
+        printNest() - Allows the user to save a text file of all NEST devices
+-->
+<MenuItems>
+    <MenuItem id="menu1">
+        <Name>Plot a single device on a Google Map</Name>
+        <CallbackMethod>displayDevices</CallbackMethod>
+        <ButtonTitle>Plot device</ButtonTitle>
+        <ConfigUI>
+		<Field id="targetDevices" type="menu">
+			<Label>Apple Devices:</Label>
+			<List class="self" filter="self.iAppleDeviceAuto" method = "myActiveDevices" />
+		</Field>
+        <Field id="plotHistory" type="checkbox" defaultValue="false">
+            <Label>Do you want to plot the last day's history?</Label>
+        </Field>
+        </ConfigUI>
+    </MenuItem>
+    <MenuItem id="menu2">
+        <Name>Plot all devices on a Google Map</Name>
+        <CallbackMethod>displayAllDevices</CallbackMethod>
+    </MenuItem>
+    <MenuItem id="menu0">
+        <Name>Send a detailed report to the Indigo Log</Name>
+        <ConfigUI>
+            <Field id="allDevices" type="checkbox" defaultValue="true">
+                <Label>Include all devices in report?:</Label>
+            </Field>
+            <Field id="targetReport" type="menu">
+			    <Label>Apple Devices:</Label>
+			    <List class="self" filter="self.iAppleDeviceAuto" method = "myActiveDevices" />
+		    </Field>
+            <Field id="includeTracking" type="checkbox" defaultValue="false">
+                <Label>Include tracking detail in report?:</Label>
+            </Field>
+            <Field id="includeRange" type="textfield" defaultValue="1">
+                <Label>How many days?:</Label>
+            </Field>
+            <Field id="includeInactives" type="checkbox" defaultValue="false">
+                <Label>Include Inactive detail in report?:</Label>
+            </Field>
+            <Field id="includeGeos" type="checkbox" defaultValue="true">
+                <Label>Include Geo details in report?:</Label>
+            </Field>
+        </ConfigUI>
+        <CallbackMethod>iPrint</CallbackMethod>
+    </MenuItem>
+    <MenuItem id="menu20">
+        <Name>Save a text file of the detailed report to the Maps Directory</Name>
+        <ConfigUI>
+            <Field id="allSaveDevices" type="checkbox" defaultValue="true">
+                <Label>Include all devices in report?:</Label>
+            </Field>
+            <Field id="targetSave" type="menu">
+			    <Label>Apple Devices:</Label>
+			    <List class="self" filter="self.iAppleDeviceAuto" method = "myActiveDevices" />
+		    </Field>
+            <Field id="includeSaveTrack" type="checkbox" defaultValue="false">
+                <Label>Include tracking detail in report?:</Label>
+            </Field>
+            <Field id="includeSaveRange" type="textfield" defaultValue="1">
+                <Label>How many days?:</Label>
+            </Field>
+            <Field id="includeSaveInactives" type="checkbox" defaultValue="false">
+                <Label>Include Inactive detail in report?:</Label>
+            </Field>
+            <Field id="includeSaveGeos" type="checkbox" defaultValue="true">
+                <Label>Include Geo details in report?:</Label>
+            </Field>
+        </ConfigUI>
+        <CallbackMethod>iSavePrint</CallbackMethod>
+    </MenuItem>
+    <MenuItem id="menu3">
+        <Name>Create a Home GeoFence</Name>
+        <CallbackMethod>createHomeGeo</CallbackMethod>
+    </MenuItem>
+    <MenuItem id="menu7">
+        <Name>Create a Geofence from device location</Name>
+        <ConfigUI>
+            <Field id="devTarget" type="menu">
+                <List class="self" filter="self.iAppleDeviceAuto" method = "myActiveDevices" />
+            </Field>
+            <Field id="geoCreateName"
+                   type="textfield"
+                   defaultValue="Enter a name">
+                <Label>Name of GeoFence:</Label>
+            </Field>
+            <Field id="geoRangeNeeded"
+                   type="textfield"
+                   defaultValue="30">
+                <Label>Range of GeoFence (m):</Label>
+            </Field>
+        </ConfigUI>
+        <ButtonTitle>Create Geo</ButtonTitle>
+        <CallbackMethod>createGeoFence</CallbackMethod>
+    </MenuItem>
+    <MenuItem id="menu4">
+        <Name>Make an Apple Device Active or Inactive</Name>
+        <CallbackMethod>toggleDeviceActive</CallbackMethod>
+        <ButtonTitle>Toggle</ButtonTitle>
+        <ConfigUI>
+		<Field id="targetToggle" type="menu">
+			<Label>Apple Devices:</Label>
+			<List class="self" filter="self.iAppleDeviceAuto" method = "myDevices" />
+		</Field>
+        <Field id="activeDevice" type="checkbox" default="True">
+			<Label>Active?</Label>
+		</Field>
+        </ConfigUI>
+    </MenuItem>
+    <MenuItem id="menu6">
+        <Name>Send a message to an Apple Device</Name>
+        <ConfigUI>
+		    <Field id="targetMessage" type="menu">
+			    <Label>Apple Devices:</Label>
+			    <List class="self" filter="self.iAppleDeviceAuto" method = "myActiveDevices" />
+		    </Field>
+            <Field id="messageDevice" type="textfield" default="Message from Indigo">
+			    <Label>Message to send?</Label>
+		    </Field>
+            <Field id="soundDevice" type="checkbox" default="false">
+			    <Label>Make a sound on the device?</Label>
+		    </Field>
+        </ConfigUI>
+        <ButtonTitle>Message</ButtonTitle>
+        <CallbackMethod>messageDevice</CallbackMethod>
+    </MenuItem>
+    <MenuItem id="menu5">
+        <Name>Make a GeoFence Active or Inactive</Name>
+        <CallbackMethod>toggleGeoActive</CallbackMethod>
+        <ButtonTitle>Toggle</ButtonTitle>
+        <ConfigUI>
+		<Field id="targetGeo" type="menu">
+			<Label>Geofences:</Label>
+			<List class="self" filter="self.iGeoFence" method = "myGeos" />
+		</Field>
+        <Field id="activeGeo" type="checkbox" default="True">
+			<Label>Active?</Label>
+		</Field>
+        </ConfigUI>
+    </MenuItem>
+    <MenuItem id="menu10">
+        <Name>Purge Tracking database</Name>
+        <CallbackMethod>databasePurge</CallbackMethod>
+        <ButtonTitle>Purge</ButtonTitle>
+        <ConfigUI>
+            <Field id="purgeData" type="checkbox" defaultValue="false">
+                <Label>Purge all current tracking data?</Label>
+            </Field>
+        </ConfigUI>
+    </MenuItem>
+</MenuItems>
